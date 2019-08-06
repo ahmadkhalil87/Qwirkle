@@ -1,0 +1,517 @@
+package game.game_Elements;
+
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import client.Client;
+import client.ClientType;
+import game.gameboard.Field;
+import game.gameboard.NotValidException;
+import game.gameboard.TileOnPosition;
+import game.gameconfig.Configuration;
+import message.Exceptions.AccessDenied;
+import message.Exceptions.NotAllowed;
+import message.gameMessages.*;
+import message.message_abstract.ClientMessage;
+import message.message_abstract.Message;
+import message.messages_from_server.GameJoinAccepted;
+import message.messages_from_server.SpectatorJoinAccepted;
+import server.MessagesFromClientCaseHandling;
+import enumeration.GameState;
+
+public class Game {
+
+	/**
+	 * Control Elements
+	 */
+	transient Logger logger = LogManager.getLogger();
+	transient TimeThread Timer;
+
+	/**
+	 * Message Queues
+	 */
+	private transient LinkedBlockingQueue<ClientMessage> gameMessages;
+	private transient LinkedBlockingQueue<ClientMessage> participantMessages;
+	
+	/**
+	 * Game Information
+	 */
+	private int gameId;
+	private String gameName;
+	private GameState gameState;
+	private boolean isTournament;
+	private Configuration config;
+
+	/**
+	 * Client information
+	 */
+	private ArrayList<Client> players;
+	private transient LinkedBlockingQueue<Client> playerturns;
+	private transient ArrayList<Client> clients;
+	private transient HashMap<Client,Integer> ScoreBoard;
+	private transient Map<Client, Collection<Tile>> playerHands;
+	private transient Client currentplayer;
+
+	/**
+	 * The Field and Bag
+	 */
+	private transient Bag bag;
+	private transient Field playboard;
+
+
+	public Game(int gameID, String gameName, GameState gameState, boolean isTournament, Configuration config) {
+
+		this.gameId = gameID;
+		this.gameName = gameName;
+		this.gameState = gameState;
+		this.isTournament = isTournament;
+		this.players = new ArrayList<Client>();
+		this.config = config;
+
+		this.Timer = new TimeThread(this);
+
+		this.ScoreBoard = new HashMap<>();
+		this.clients = new ArrayList<>();
+		this.playerHands = new HashMap<>();
+		this.playerturns = new LinkedBlockingQueue<Client>();
+		this.gameMessages = new LinkedBlockingQueue<ClientMessage>();
+		this.setParticipantMessages(new LinkedBlockingQueue<ClientMessage>());
+
+
+//		ArrayList<Tile> tempTiles = new ArrayList<Tile>();
+//		int tempID = 0;
+//		for (int i = 0; i < config.getColorShapeCount(); i++)
+//		{
+//			for (int j = 0; j < config.getColorShapeCount(); j++)
+//			{
+//				for(int n = 0; n < config.getTileCount(); n++)
+//				{
+//					tempTiles.add(new Tile(i, j, tempID));
+//					tempID++;
+//				}
+//			}
+//		}
+		this.bag = new Bag();
+		this.playboard = new Field(new TileOnPosition(0, 0, null));
+
+		logger.log(Level.getLevel("GAME"), "Game: " + this + " has been made {GAMEID: " + this.gameId + " }");
+		InitiateThreads();
+
+	}
+
+	/**
+	 * Instances the Game and starts all needed Threads to handle the Messages sent from the Clients
+	 */
+	public void InitiateThreads() {
+		Thread gameMessageHandler = new Thread(new gameMessageHandling(this), "gameMessageHandler Thread of Game #"+ gameId);
+		gameMessageHandler.setDaemon(true);
+		gameMessageHandler.start();
+
+
+		Thread participantHandler = new Thread(new participantMessageHandling(this), "participantMessageHandler Thread of Game #"+ gameId);
+		participantHandler.setDaemon(true);
+		participantHandler.start();
+	}
+
+	public int getGameId() {
+		return gameId;
+	}
+
+	public void setGameID(int gameID) {
+		this.gameId = gameID;
+	}
+
+	public String getGameName() {
+		return gameName;
+	}
+
+	public void setGameName(String gameName) {
+		this.gameName = gameName;
+	}
+
+	public GameState getGameState() {
+		return gameState;
+	}
+
+	public void setState(GameState gameState) {
+		this.gameState = gameState;
+	}
+
+	public boolean isTournament() {
+		return isTournament;
+	}
+
+	public void setTournament(boolean isTournament) {
+		this.isTournament = isTournament;
+	}
+
+	public LinkedBlockingQueue<Client> getPlayerturns() {
+		return playerturns;
+	}
+
+	public void setPlayerturns(LinkedBlockingQueue<Client> playerturns) {
+		this.playerturns = playerturns;
+	}
+
+	public LinkedBlockingQueue<ClientMessage> getGameQueue(){
+		return gameMessages;
+	}
+
+	public Configuration getConfig() {
+		return config;
+	}
+
+	public void setConfig(Configuration config) {
+		this.config = config;
+	}
+
+	public int getBagSize()
+	{
+		return this.bag.getSize();
+	}
+
+	public void addBagTiles(ArrayList<Tile> pTiles)
+	{
+		this.bag.addTile(pTiles);
+	}
+
+	public void addBagTile(Tile pTile)
+	{
+		this.bag.addTile(pTile);
+	}
+
+	public ArrayList<Tile> getBagTiles(int count)
+	{
+		return this.bag.getTiles(count);
+	}
+
+	public ArrayList<Tile> getAllBagTiles()
+	{
+		return this.bag.getAllTiles();
+	}
+
+	public LinkedBlockingQueue<ClientMessage> getGameMessages() {
+		return gameMessages;
+	}
+
+	public void setGameMessages(LinkedBlockingQueue<ClientMessage> gameMessages) {
+		this.gameMessages = gameMessages;
+	}
+
+	public ArrayList<Client> getPlayers() {
+		return players;
+	}
+
+	public void setPlayers(ArrayList<Client> players) {
+		this.players = players;
+	}
+
+	public ArrayList<Client> getClients() {
+		return clients;
+	}
+
+	public void setClients(ArrayList<Client> clients) {
+		this.clients = clients;
+	}
+
+	public HashMap<Client, Integer> getScoreBoard() {
+		return ScoreBoard;
+	}
+
+	public void setScoreBoard(HashMap<Client, Integer> scoreBoard) {
+		ScoreBoard = scoreBoard;
+	}
+
+	public Bag getBag() {
+		return bag;
+	}
+
+	public void setBag(Bag bag) {
+		this.bag = bag;
+	}
+
+	public Field getPlayboard() {
+		return playboard;
+	}
+
+	public void setPlayboard(Field playboard) {
+		this.playboard = playboard;
+	}
+
+	public void setParticipantMessages(LinkedBlockingQueue<ClientMessage> participantMessages) {
+		this.participantMessages = participantMessages;
+	}
+
+	public Map<Client, Collection<Tile>> getPlayerHands() {
+		return playerHands;
+	}
+
+	public void setPlayerHands(Map<Client, Collection<Tile>> playerHands) {
+		this.playerHands = playerHands;
+	}
+
+	public Client getCurrentplayer() {
+		return currentplayer;
+	}
+
+	public void setCurrentplayer(Client currentplayer) {
+		this.currentplayer = currentplayer;
+	}
+
+	public LinkedBlockingQueue<ClientMessage> getParticipantMessages() {
+		return participantMessages;
+	}
+
+	public boolean playTile(ArrayList<TileOnPosition> newTiles) {
+		boolean testresult = this.playboard.addToField(newTiles);
+		return testresult;
+	}
+
+
+
+	/**
+	 * Method used to send a message to all of the games participants
+	 * @param message
+	 */
+	public void sendAll(Message message) {
+		for (Client client : clients) {
+			client.sendMessage(message);
+		}
+	}
+
+	/**
+	 * Method used to connect clients, invoked by {@linkplain MessagesFromClientCaseHandling}
+	 * @param client
+	 */
+	public void ConnectClient(Client client) {
+		if (client.getClientType() == ClientType.PLAYER) {
+			int playeramount = this.getPlayers().size();
+			if (playeramount >= config.getMaxPlayerNumber()) {
+				client.sendMessage(new AccessDenied("Game is already full."));
+				logger.log(Level.getLevel("GAME"), "Client: " + client + " tried to connect with wrong role." );
+				return;
+			}else {
+				this.getPlayers().add(client);
+				this.getClients().add(client);
+				client.setIngame(true);
+				client.setPlayer(true);
+				client.setGame(this);
+				client.sendMessage(new GameJoinAccepted(this));
+				logger.log(Level.getLevel("GAME"), "Client: " + client + " has been succesfully connected as a PLAYER @" + this + " " + this.getClients());
+			}
+		}
+		else {
+			this.getClients().add(client);
+			client.setIngame(true);
+			client.setGame(this);
+			client.setPlayer(false);
+			client.sendMessage(new SpectatorJoinAccepted(this));
+			logger.log(Level.getLevel("GAME"), "Client: " + client + " has been succesfully connected as a SPECTATOR @" + this );
+		}
+		
+	}
+
+	/**
+	 * Method used to disconnect a client when he wants to leave
+	 * @param scc
+	 */
+	public void disconnectClient(Client c) {
+		String clientName = c.getClientName();
+
+		for (Client client : clients) {
+			if(client.getClientId() == c.getClientId()) {
+				if (client.getClientType() == ClientType.PLAYER) {
+					if (currentplayer.getClientName() == clientName) {
+						//TODO implement next turn
+					}
+					playerturns.remove(client);
+					players.remove(client);
+					playerHands.remove(client);
+					clients.remove(client);
+					logger.log(Level.getLevel("GAME"), "Client: " + client + " {ROLE: PLAYER} disconnected from game : " + this );
+					return;
+				}
+				else {
+					clients.remove(client);
+					client.setIngame(false);
+					logger.log(Level.getLevel("GAME"), "Client: " + client + " {ROLE: SPECTATOR} disconnected from game : " + this );
+					return;
+				}
+			}
+		}
+
+	}
+
+
+	/**
+	 * Method to be used by the Players/Observers of a Game.
+	 * Sends the Message to the Games Messagehandling.
+	 * @param cm
+	 * @throws InterruptedException
+	 */
+	public void sendMessage(ClientMessage cm) throws InterruptedException {
+		int id = cm.getClientMessage().getUniqueID();
+		// Checking if the Message is a Disconnect or Pause message
+		if (id == 405 || id == 403) {
+			gameMessages.put(cm);
+			logger.log(Level.getLevel("GAME"), "Client: " + cm.getClient() + " [ " + cm.getClient().getClientName() + " ] " + " send GameMessage" + cm.getClientMessage() );
+		}
+		else {
+			getParticipantMessages().put(cm);
+		}
+	}
+
+	/**
+	 * Method used to find out who is the next player,
+	 * and draws new Tiles, if needed.
+	 * @throws InterruptedException
+	 */
+	public void nextPlayerCheck() throws InterruptedException {
+		Client nextplayer = this.playerturns.take();
+		if (nextplayer.getClientId() == -1) {
+			return;
+		}
+		Collection<Tile> playertiles = playerHands.get(nextplayer);
+		while (playertiles.size() != this.config.getMaxHandTiles()) {
+
+			// Bag is empty
+			if(this.bag.isEmpty()) {
+				for(Client player : players) {
+					if (playerHands.get(nextplayer).size() != 0) {
+						EndGame();
+					}
+					else {
+						continue;
+					}
+				}
+			}
+			// Bag still has tiles
+			else {
+//				playertiles.add(this.bag.getTile());
+			}
+		}
+			// check if bag is empty after drawing
+		try {
+			assert(this.bag.getSize() != 0);
+			} catch (AssertionError e) {
+				for(Client player : players) {
+					if (playerHands.get(player).size() == 0) {
+						EndGame();
+					}
+					else {
+						continue;
+					}
+				}
+			}
+			// All checks have passed, game can continue
+			sendAll(new CurrentPlayer(nextplayer));
+			this.Timer.startTurnTimer();
+		}
+
+
+	/**
+	 * Method called once the Game comes to an end by
+	 * non-forced means.
+	 * Tallies up players and decides winners and placements of the Players
+	 */
+	public void EndGame() {
+		sendAll(new EndGame());
+		Client winner = null;
+		int i = 0;
+		for (Client player : players) {
+			int playerscore = ScoreBoard.get(player);
+			if(playerscore > i) {
+				winner = player;
+				i = playerscore;
+			}
+			else {
+				continue;
+			}
+
+		sendAll(new Winner(winner, i, getScoreBoard()));
+		}
+	}
+
+	/**
+	 * Method used by the Ausrichter GUI to start the Game.
+	 * @param playerOrder
+	 * @throws InterruptedException
+	 */
+	public void StartGame(ArrayList<Client> playerOrder) throws InterruptedException {
+		// Initiate Gametimer
+		this.Timer.startTimer();
+		
+		// Notify everyone that game is starting
+		this.setState(gameState.IN_PROGRESS);
+		sendAll(new StartGame(this.config, this.clients));
+		
+		// Sanity check : Is game actually fair?
+		if (config.getMaxHandTiles()*playerOrder.size() > bag.getSize()) {
+			AbortGame();
+		}
+
+		// Giving every player (in playerorder) tiles and allocate them in their respective lists
+		this.initPlayerHands(playerOrder);
+		Collection<Tile> playerhand;
+
+		for (Client player : playerOrder) {
+			playerhand = this.bag.getTiles(config.getMaxHandTiles());
+			for (Tile t : playerhand){
+				playerHands.get(player).add(new Tile(t.getColor(), t.getShape(), t.getUniqueID()));
+			}
+			playerturns.add(player);
+
+			StartTiles stMsg = new StartTiles(playerHands.get(player));
+			player.sendMessage(stMsg);
+
+			this.bag.removeTiles((ArrayList<Tile>)playerHands.get(player));
+		}
+		playerturns.add(new Client("Last", null,-1));
+		// Game Starts
+		nextPlayerCheck();
+		logger.log(Level.getLevel("GAME"), "Game: " + this + " has been started: { PLAYERORDER: " + playerOrder + " }" );
+	}
+
+	/**
+	 * Method used by Ausrichter GUI to stop the Game
+	 */
+	public void AbortGame() {
+		sendAll(new AbortGame());
+		this.gameState = GameState.ENDED;
+		//TODO IMPLEMENT THIS FURTHER
+		logger.log(Level.getLevel("GAME"), "Game: " + this + " Aborts!" );
+	}
+
+	/**
+	 * Used to Pause the Game
+	 * @param client
+	 * @throws InterruptedException
+	 */
+	/*
+	public void PauseGame(Spectator client) throws InterruptedException {
+		setGameState(GameState.PAUSED);
+		ClientMessage pauserequest = new ClientMessage(client, new PauseGame());
+		gameMessages.put(pauserequest);
+		//TODO implement pausing
+
+	}*/
+	
+	public void initPlayerHands(ArrayList<Client> players){
+		for (Client player : players){
+			this.playerHands.put(player, new ArrayList<Tile>());
+		}
+	}
+
+}
+
+
+
+

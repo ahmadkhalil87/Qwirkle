@@ -1,0 +1,256 @@
+package qwirkle.Desktop.View.InGame;
+
+import java.util.function.UnaryOperator;
+
+import javafx.animation.TranslateTransition;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.control.TextFormatter.Change;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.util.Callback;
+import javafx.util.Duration;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import qwirkle.Desktop.Communication.Messages.messages_to_server.MessageSend;
+import qwirkle.Desktop.Controller.GameController;
+import qwirkle.Desktop.Main.Mainstarter;
+import qwirkle.Desktop.Resources.Resources;
+
+public class ChatView extends StackPane{
+	
+	  private GameView view;
+	  private final int maxCharacters = 50; // can be taken out or be set
+	  private int numCharactersLeft;
+
+	  private boolean visibility=false;
+	  private Text title;
+	  private Label lblCharactersLeft;
+	  public ObservableList<String> chatMessages;
+	  private ListView<String> lstChatMessages;
+	  private TextField textInputMessage;
+	  public VBox container;
+
+
+	  /**
+	   * The constructor of the class.
+	   *
+	   * @param tmpView The actual GameView instance
+	   * @param tmpModel The actual model instance
+	   */
+	  public ChatView() {
+
+	    // Load Font and Style Sheet
+	    Font.loadFont(Resources.el_font, 20);
+	    getStylesheets().add(Resources.Css_ChatView);
+
+	    // Creating "Chat Messages" observable list and list view
+	    this.chatMessages = FXCollections.observableArrayList();
+
+	    this.lstChatMessages = new ListView<String>(chatMessages);
+	    this.lstChatMessages.setPrefWidth(780);
+	    this.lstChatMessages.setPrefHeight(780);
+	    this.lstChatMessages.setStyle("");
+//	    this.lstChatMessages.setPadding(new Insets(0,10,0,10));
+	    this.lstChatMessages.setStyle("-fx-background-color: white;");
+	    this.lstChatMessages.setId("chatMessages");
+	    this.lstChatMessages.setCellFactory(
+	        new Callback<ListView<String>, ListCell<String>>() {
+	          @Override
+	          public ListCell<String> call(ListView<String> lstChatMessages) {
+	            final ListCell<String> cell =
+	                new ListCell<String>() {
+	                  {
+	                    setPrefWidth(5);
+	                    setWrapText(true);
+	                  }
+
+	                  @Override
+	                  protected void updateItem(String item, boolean empty) {
+	                    super.updateItem(item, empty);
+	                    if (item == null) {
+	                      setText(null);
+	                      setStyle(null);
+	                    } else {
+	                      setText(item);
+	                      setStyle("-fx-font-family: 'Elianto Regular';");
+	                    }
+	                  }
+	                };
+	            return cell;
+	          }
+	        });
+	    this.lstChatMessages.setId("lstChatMessages");
+
+
+	    // Setup Labels
+	    this.title = new Text("Chat");
+	    title.setOnMouseClicked(e -> {slideChat();});
+	    this.title.setId("Title");
+	    this.lblCharactersLeft = new Label(Integer.toString(this.maxCharacters));
+	    this.lblCharactersLeft.setId("lblCharactersLeft");
+
+	    // Setup Message Text Input
+	    this.textInputMessage = new TextField();
+	    this.textInputMessage.prefWidthProperty().bind(lstChatMessages.widthProperty().multiply(0.8));
+	    this.textInputMessage.setPrefHeight(40);
+	    this.textInputMessage.setFont(Font.loadFont(Resources.el_font, 16));
+
+	    this.textInputMessage.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>(){
+			@Override
+			public void handle(KeyEvent event) {
+				if (event.getCode() == KeyCode.ENTER) {
+			          String message = textInputMessage.getText();
+			          if(textInputMessage.getText()!= "") {
+			          sendMessage(message);
+			          }
+			    }
+			}
+		});
+	    final UnaryOperator<Change> limit = c -> {
+	        if (c.isContentChange()) {
+	            int newLength = c.getControlNewText().length();
+	            if (newLength > maxCharacters) {
+	                c.setText(c.getControlText());
+	            }
+	        }
+	        return c;
+	    };
+	    final UnaryOperator<Change> chatFilter =
+	        change -> { // Setup Filter
+	          if (change.getControlNewText().length() > maxCharacters) {
+	            numCharactersLeft = 0;
+	            lblCharactersLeft.setText(Integer.toString(numCharactersLeft));
+	            return null;
+	          } else {
+	            numCharactersLeft = maxCharacters - change.getControlNewText().length();
+	            lblCharactersLeft.setText(Integer.toString(numCharactersLeft));
+	            return change;
+	          }
+	        };
+	    this.textInputMessage.setTextFormatter(new TextFormatter<>(limit));
+	    this.textInputMessage.setTextFormatter(new TextFormatter<>(chatFilter));
+	    this.textInputMessage.setOnKeyPressed(
+	        new EventHandler<KeyEvent>() {
+	          @Override
+	          public void handle(KeyEvent keyEvent) {
+	            if ((keyEvent.getCode() == KeyCode.ENTER) && (!keyEvent.isAltDown())) {
+	              keyEvent.consume();
+	              String message = textInputMessage.getText();
+	              textInputMessage.clear();
+	              sendMessage(message);
+	            } else if ((keyEvent.getCode() == KeyCode.ENTER) && (keyEvent.isAltDown())) {
+	              textInputMessage.appendText("\n");
+	            }
+	          }
+	        });
+	    this.textInputMessage.setId("textInputMessage");
+
+
+	    // Setup Send Button
+	    Button sendBtn = new Button("Send");
+	    sendBtn.prefWidthProperty().bind(lstChatMessages.widthProperty().multiply(0.2));
+	    sendBtn.setOnAction(e ->{ // Show deck
+	          sendMessage(textInputMessage.getText());
+	        });
+	    
+	    StackPane top = new StackPane();
+	    top.getChildren().add(lstChatMessages);
+	    
+	    HBox bottom = new HBox(5);
+	    bottom.setAlignment(Pos.CENTER);
+	    bottom.getChildren().addAll(textInputMessage, sendBtn);
+	    bottom.setPadding(new Insets(0,0,10,0));
+
+	    
+	    // Put all together
+	    this.container = new VBox(10);
+	    container.setAlignment(Pos.BOTTOM_CENTER);
+	    container.getChildren().addAll(lstChatMessages, bottom, title);
+	    container.setPadding(new Insets(10,10,10,10));
+	    container.setId("chat");
+	    
+	    this.getChildren().add(container);
+	  }
+
+	  // --- END CONSTRUCTOR ---
+
+	  /**
+	   * This method will add a chat message (recieved from server or sent by user) to the
+	   * lstChatMessages ListView.
+	   *
+	   * @param text The message text to be displayed
+	   */
+	  public void addMessage(String text) {
+
+
+	    chatMessages.add(text);
+	    lstChatMessages.scrollTo(text);
+	  }
+
+	  /**
+	   * This method will send a message to the server.
+	   *
+	   * @param message The message text to be displayed
+	   */
+	  private void sendMessage(String message) {
+          Mainstarter.meClient.sendMessage(new MessageSend(message, Mainstarter.meClient));
+          textInputMessage.clear();
+	  }
+	  
+		public void slideChat() {
+			TranslateTransition tt = new TranslateTransition();
+			tt.setNode(this);	
+			tt.setDuration(new Duration(500));
+			if (visibility==false) 
+			{
+				tt.setFromY(-(this.container.getHeight()-40));
+				tt.setToY(0);
+				this.visibility = true;
+				container.setStyle("-fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.8), 35, 0.6, 15, 10);");
+			} 
+			else { // Hide ribbon
+				
+				tt.setFromY(0);
+				tt.setToY(-(this.container.getHeight()-40));
+				this.visibility = false;
+				container.setStyle("-fx-effect: none");	
+				}
+			tt.play();
+
+		}
+	  
+
+	  public void clearChat() {
+	    this.chatMessages.clear();
+	  }
+	  
+	  class Sleep extends Thread{
+		public void run()
+			{
+				try {
+					Thread.sleep(500);
+					container.setStyle("-fx-effect: none");	
+				}
+				catch(InterruptedException e){}
+			}
+		}
+	}

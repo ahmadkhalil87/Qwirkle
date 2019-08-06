@@ -1,0 +1,491 @@
+package qwirkle.Desktop.View.InGame;
+//
+import javafx.animation.Animation.Status;
+import javafx.application.Platform;
+
+import java.awt.Color;
+
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.util.Duration;
+import qwirkle.Desktop.Communication.Messages.gameMessages.LeavingRequest;
+import qwirkle.Desktop.Controller.GameController;
+import qwirkle.Desktop.Controller.MainMenuController;
+import qwirkle.Desktop.Main.Mainstarter;
+import qwirkle.Desktop.Resources.Resources;
+import qwirkle.Desktop.enumeration.SoundEffects;
+
+
+
+/**
+ * This class models the control bar in the bottom in the game view.
+ *
+ * @author Houman Mahtabi
+ */
+
+public class ControlBar extends StackPane {
+
+	private int tilesLeft; // The tiles left in the game, will be calculated from deck
+	private long timeLeft; // Time left for turn (in SECONDS here!)
+	private Timeline timeline; // The Timer
+
+	private Label lblTilesLeft;
+	private Label lblTimeLeft;
+
+	private ImageView imgButtonAllPlayerTilesOn;
+	private ImageView imgButtonAllPlayerTilesOff;
+	
+	private ImageView imgPause;
+	private ImageView imgResume;
+
+	private VBox vboxViewAllPlayersTile;
+	private VBox vboxPauseResume;
+	
+	private boolean gameIsPaused=false;
+
+	/**
+	 * The constructor for the class.
+	 *
+	 * @param tmpControl The actual GameViewController instance
+	 * @param tmpView The actual GameView instance
+	 * @param tmpModel The actual Model instance
+	 */
+	public ControlBar() {
+
+		getStylesheets().add(Resources.Css_ContolBar);
+
+		Timeline timeLine = new Timeline();
+
+		// Label for time left to play current Turn
+		this.lblTimeLeft = new Label();
+		if (this.timeLeft > 0){
+			this.lblTimeLeft.setText(Long.toString(timeLeft));
+		}else{
+			this.lblTimeLeft.setText("Time's Up");
+		}
+
+		HBox timeContainer = new HBox();
+		timeContainer.setAlignment(Pos.CENTER);
+		timeContainer.getChildren().add(lblTimeLeft);
+
+		// Background for the controlBar
+		Image img1;
+		img1 = new Image(Resources.btnBackgroundImage);
+		BackgroundImage backgroundImage =
+				new BackgroundImage(
+						img1,
+						BackgroundRepeat.NO_REPEAT,
+						BackgroundRepeat.NO_REPEAT,
+						BackgroundPosition.DEFAULT,
+						new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, true, true));
+		Background background = new Background(backgroundImage);
+
+		// Settings Button
+		Image img5;
+		img5 = new Image(Resources.btnSettingsImage);
+		ImageView imgButtonSettings = new ImageView(img5);
+		imgButtonSettings.setFitWidth(70);
+		imgButtonSettings.setFitHeight(70);
+		imgButtonSettings.setId("imgButtonSettings");
+		imgButtonSettings.addEventHandler( // Show settings window
+				MouseEvent.MOUSE_CLICKED,
+				event -> {
+					SoundEffects.BUTTON_CLICK.play(Mainstarter.model.getSoundVol());
+					//         if (view.getTilesInHandSlideIsVisible()==true) {view.slideAllPlayerTiles();}
+					GameController.callSettings();
+					//view.slideSettigs();
+				});
+
+		// Show all player's hand
+//		Image img6;
+//		img6 = new Image(Resources.btnViewOnImage);
+//		imgButtonAllPlayerTilesOn = new ImageView(img6);
+//		imgButtonAllPlayerTilesOn.setFitWidth(70);
+//		imgButtonAllPlayerTilesOn.setFitHeight(70);
+//		imgButtonAllPlayerTilesOn.setId("imgButtonAllPlayerTilesOn");
+//		imgButtonAllPlayerTilesOn.addEventHandler( // open slider
+//				MouseEvent.MOUSE_CLICKED,
+//				event -> { SoundEffects.BUTTON_CLICK.play(Mainstarter.model.getSoundVol());
+//				if (Mainstarter.gameView.getTilesInHandSlideIsVisible()== false){
+//					Mainstarter.gameView.slideAllPlayerTiles();
+//				}
+//				else {}
+//				});
+//		// Hide all player's Hand
+//		Image img7;
+//		img7 = new Image(Resources.btnViewOffImage);
+//		imgButtonAllPlayerTilesOff = new ImageView(img7);
+//		imgButtonAllPlayerTilesOff.setFitWidth(70);
+//		imgButtonAllPlayerTilesOff.setFitHeight(70);
+//		imgButtonAllPlayerTilesOff.setId("imgButtonAllPlayerTilesOff");
+//		imgButtonAllPlayerTilesOff.addEventHandler( // open slider
+//				MouseEvent.MOUSE_CLICKED,
+//				event -> { SoundEffects.BUTTON_CLICK.play(Mainstarter.model.getSoundVol());
+//				if (Mainstarter.gameView.getTilesInHandSlideIsVisible()== true)
+//				{
+//					Mainstarter.gameView.slideAllPlayerTiles();
+//				}
+//				else {}
+//				});
+
+		// Set Button "Exit" Image
+		Image img8;
+		img8= new Image(Resources.btnExitImage);
+		ImageView imgButtonExit = new ImageView(img8);
+		imgButtonExit.setFitWidth(70);
+		imgButtonExit.setFitHeight(70);
+		imgButtonExit.setId("imgButtonExit");
+		imgButtonExit.addEventHandler( // Exit game
+				MouseEvent.MOUSE_CLICKED,
+				event -> {
+					SoundEffects.BUTTON_CLICK.play(Mainstarter.model.getSoundVol());
+					Mainstarter.meClient.setIngame(false);
+					Mainstarter.meClient.sendMessage(new LeavingRequest());
+					MainMenuController.switchMainMenu();
+					Mainstarter.settingsView.rootParent= Mainstarter.mainMenuView;
+				});
+
+
+		// Set Bag Image and stack Bag und TilesLeft together
+		this.lblTilesLeft = new Label();
+		this.lblTilesLeft.setText(Integer.toString(tilesLeft));
+		Image img9;
+		img9 = new Image(Resources.BAG_IMAGE);
+		ImageView imgBag= new ImageView(img9);
+		imgBag.setFitWidth(80);
+		imgBag.setFitHeight(70);
+		StackPane bagContainer = new StackPane();
+		bagContainer.getChildren().addAll(imgBag, this.lblTilesLeft);
+		
+		
+		// set Button "Pause" Image
+		Image image10=new Image(Resources.btnPauseImage);
+		imgPause = new ImageView(image10);
+		imgPause.setFitWidth(70);
+		imgPause.setFitHeight(70);
+		imgPause.setId("imgButtonPause");
+		imgPause.addEventHandler( // Pause Game
+				MouseEvent.MOUSE_CLICKED,
+				event -> {
+					SoundEffects.BUTTON_CLICK.play(Mainstarter.model.getSoundVol());
+					pauseGame();
+					switchPauseResumeButton();
+					
+				});
+
+		
+		
+		// set Button "Resume" Image
+		Image image11=new Image(Resources.btnResumeImage);
+		imgResume = new ImageView(image11);
+		imgResume.setFitWidth(70);
+		imgResume.setFitHeight(70);
+		imgResume.setId("imgButtonResume");
+		imgResume.addEventHandler( // Pause Game
+				MouseEvent.MOUSE_CLICKED,
+				event -> {
+					SoundEffects.BUTTON_CLICK.play(Mainstarter.model.getSoundVol());
+					switchPauseResumeButton();
+					resumeGame();
+					
+				});
+		
+		
+
+		//DebugBuuton
+		Button debugButton = new Button("debug");
+		debugButton.setId("debugButton");
+/*		debugButton.setOnAction(e -> {Mainstarter.gameView.slideDebugvView();
+		});
+		debugButton.setOnAction( // Get Data from dummy model
+				new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent event) {
+						Mainstarter.gameView.slideDebugvView();
+					}
+				});
+*/
+
+
+		// Position Buttons in the controlBa
+//		vboxViewAllPlayersTile = new VBox();
+//		vboxViewAllPlayersTile.getChildren().add(imgButtonAllPlayerTilesOn);
+//		vboxViewAllPlayersTile.setAlignment(Pos.CENTER);
+		
+		
+		vboxPauseResume = new VBox();
+		vboxPauseResume.getChildren().add(imgPause);
+		vboxPauseResume.setAlignment(Pos.CENTER);
+
+
+		HBox rightBtnContainer = new HBox(10);
+		rightBtnContainer.getChildren().addAll(debugButton,
+				imgButtonSettings, imgButtonExit);
+		rightBtnContainer.setAlignment(Pos.CENTER_RIGHT);
+		HBox.setHgrow(rightBtnContainer, Priority.ALWAYS);
+
+
+		HBox mainBtnContainer = new HBox(10);
+		mainBtnContainer.getChildren().addAll(bagContainer
+				, timeContainer
+				, rightBtnContainer);
+		mainBtnContainer.setAlignment(Pos.CENTER);
+		mainBtnContainer.setPadding(new Insets(15, 10, 0, 10));
+
+		rightBtnContainer.setPickOnBounds(false);
+		mainBtnContainer.setPickOnBounds(false);
+		this.setPickOnBounds(false);
+
+		this.setMaxHeight(100);
+		this.setBackground(background);
+		this.setAlignment(Pos.BOTTOM_CENTER);
+		this.getChildren().add(mainBtnContainer);
+	}
+
+
+
+	// --- END CONSTRUCTOR ---
+
+	/**
+	 * This Method will start the countdown when players turn starts
+	 *
+	 * @param id The ID of the player who makes the turn
+	 * @param type The type of the player who makes the turn
+	 * @return startTimer() if time is limited, true if not so
+	 */
+	public boolean startTurn() {
+		//   this.tilesLeft = control.getTilesLeft();
+		this.timeLeft = (GameController.joinedGame.getConfig().getTurnTime()); // Server uses Seconds
+		if (this.timeLeft > 0) {
+			this.lblTimeLeft.setText(timeString(this.timeLeft));
+			this.lblTimeLeft.setStyle("-fx-text-fill: white;");
+			stopTimer();
+			return startTimer();
+		} else {
+			this.lblTimeLeft.setText("Time left: infinite");
+			this.lblTimeLeft.setStyle("-fx-text-fill: white;");
+			return true;
+		}
+	}
+
+	/**
+	 * This Method updates the view in the sidebar when a player has finished a turn. It will also
+	 * stop the countdown.
+	 *
+	 * @return stopTimer() if time is limited, true if not so
+	 */
+	public boolean stopTurn() {
+		//    this.tilesLeft = control.getTilesLeft();
+		this.timeLeft = (GameController.joinedGame.getConfig().getTurnTime()); // Server uses Milliseconds
+		String styleString = "-fx-text-fill: white; ";
+		if (this.timeLeft > 0) {
+			this.lblTimeLeft.setText(timeString(this.timeLeft));
+			this.lblTimeLeft.setStyle(styleString);
+			return stopTimer();
+		} else {
+			this.lblTimeLeft.setText("timeup");
+			this.lblTimeLeft.setStyle(styleString);
+			return true;
+		}
+	}
+
+	/**
+	 * This method will start the timer.
+	 *
+	 * @return true if game is not paused, false if game is paused
+	 */
+	public boolean startTimer() {
+		this.timeline = new Timeline();
+		if (!timeline.getStatus().equals(Status.PAUSED)) {
+			timeline.setCycleCount(Timeline.INDEFINITE);
+			timeline.getKeyFrames().add(
+					new KeyFrame(
+							Duration.seconds(1),
+							new EventHandler<ActionEvent>(){
+								public void handle(ActionEvent event) {
+									timeLeft--;
+									if (timeLeft >10){
+										System.out.println(timeLeft);
+										lblTimeLeft.setText(timeString(timeLeft));
+									}
+									else if ((timeLeft < 5) && (timeLeft > 0)) {
+										lblTimeLeft.setText(timeString(timeLeft));
+										lblTimeLeft.setStyle("-fx-text-fill: red;");
+										SoundEffects.BUTTON_CLICK.play(Mainstarter.model.getSoundVol());
+									}
+									else if (timeLeft <= 0) {
+										SoundEffects.BUTTON_CLICK.play(Mainstarter.model.getSoundVol());
+										lblTimeLeft.setText(timeString(GameController.joinedGame.getConfig().getTurnTime()));
+										timeline.stop();
+									} 
+								}
+							}));
+			timeline.playFromStart();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * This method will pause the timer.
+	 *
+	 * @return true if game is not paused, false if game is paused or timer is not active.
+	 */
+	private boolean pauseTimer() {
+		if (timeline != null) {
+			if (!timeline.getStatus().equals(Status.PAUSED)) {
+				timeline.pause();
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * This method will resume the timer.
+	 *
+	 * @return true if game is paused, false if game is not paused or timer is not active.
+	 */
+	private boolean resumeTimer() {
+		if (timeline != null) {
+			if (timeline.getStatus().equals(Status.PAUSED)) {
+				timeline.play();
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * This method will stop the timer.
+	 *
+	 * @return true if timer was active, false otherwise
+	 */
+	public boolean stopTimer() {
+		if (timeline != null) {
+			timeline.stop();
+			this.timeline = null;
+			this.timeLeft = (GameController.joinedGame.getConfig().getTurnTime()); // Server uses Milliseconds
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public void switchAllplayerTileHandButtonOn()
+	{
+		this.vboxViewAllPlayersTile.getChildren().clear();
+		this.vboxViewAllPlayersTile.getChildren().add(this.imgButtonAllPlayerTilesOff);
+	}
+	
+	public void switchPauseResumeButton()
+	{
+		if(gameIsPaused==false){
+			this.vboxPauseResume.getChildren().clear();
+			this.vboxPauseResume.getChildren().add(this.imgResume);
+			this.gameIsPaused=true;
+		}
+		else 
+		{
+			System.out.println("game is paused");
+			this.vboxPauseResume.getChildren().clear();
+			this.vboxPauseResume.getChildren().add(this.imgPause);
+			this.gameIsPaused=false;
+
+		}
+	}
+
+
+	public void switchAllplayerTileHandButtonOff()
+	{
+		this.vboxViewAllPlayersTile.getChildren().clear();
+		this.vboxViewAllPlayersTile.getChildren().add(this.imgButtonAllPlayerTilesOn);
+	}
+
+	public boolean pauseGame() {
+		return pauseTimer();
+	}
+
+	public boolean resumeGame() {
+		return resumeTimer();
+	}
+
+	public int getTilesLeft() {
+		return this.tilesLeft;
+	}
+
+	public long getTimeLeft() {
+		return this.timeLeft;
+	}
+
+	/**
+	 * This method updates the 'Time left' display.
+	 *
+	 * @param seconds The number of seconds allowed for a turn
+	 */
+	public void setTimeLeft(long seconds) {
+		if (seconds > 0) {
+			this.timeLeft = seconds;
+			this.lblTimeLeft.setText(timeString(this.timeLeft));
+		} else if (seconds == 0) {
+			this.timeLeft = seconds;
+			this.lblTimeLeft.setText("timeup");
+		} else {
+			this.timeLeft = 0;
+			this.lblTimeLeft.setText("timeup");
+		}
+	}
+
+	/**
+	 * This method generates a nice time string from the number of seconds given.
+	 *
+	 * @param seconds The number of seconds
+	 */
+	private String timeString(long Milliseconds) {
+		long seconds = Milliseconds / 1000;
+		long hours = seconds / 3600;
+		long minutes = (seconds % 360) / 60;
+		seconds%=60;
+
+		if (hours > 9) {
+			return "Time: " + String.format("%02d:%02d:%02d", hours, minutes, seconds);
+		} else if (hours > 0) {
+			return "Time: " + String.format("%01d:%02d:%02d", hours, minutes, seconds);
+		} else {
+	//		return "timeleft" + String.format("%02d:%02d", minutes, seconds);  // this line shows timeleft all the time
+			return String.format("%02d:%02d", minutes, seconds);
+		}
+	}
+
+	public void setBagValue(int tilesCount){
+		this.lblTilesLeft.setText(Integer.toString(tilesCount));
+	}
+
+}
+

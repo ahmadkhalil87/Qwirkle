@@ -1,0 +1,80 @@
+.button{
+	-fx-shape: "M 200 300 L 250 250 L 650 250 L 650 350 L 600 400 L 200 400 L 200 300 ";
+	-fx-pref-width: 200px;
+	-fx-pref-height: 50px;
+	-fx-background-color:  linear-gradient(to bottom, 
+						rgba(255,255,255,0.2),
+				 		rgba(33,33,33,0.3),
+						rgba(255,255,255,0.2));
+	-fx-border-color: white;
+	-fx-border-radius: 2px;
+	-fx-text-fill: rgb(255, 255, 255, 0.6);
+	-fx-font-family: Elianto Regular;
+    	-fx-font-size: 22px;
+	-fx-padding: 3 3 3 3;
+}
+
+.button:hover {
+	-fx-background-color: transparent;
+	-fx-text-fill: white;
+}
+
+
+.button:pressed {
+    -fx-background-color: rgba(255, 255, 255, .5);
+}
+
+#TitlePane{
+	-fx-shape: "M 210 390 L 180 360 L 180 270 L 210 240 L 510 240 L 540 270 L 540 360 L 510 390 Z";
+	-fx-background-color:  linear-gradient(to bottom, 
+						rgba(255,255,255,0.5),
+				 		rgba(33,33,33,0.3),
+						rgba(255,255,255,0.5));
+}
+
+#menuText {
+    -fx-font-family: Elianto Regular, sans-serif;
+    -fx-font-size: 50px;
+    -fx-fill: white;
+    -fx-font-weight: bold;
+}
+
+#lstSpectators {
+	-fx-alignment: top-center;
+	-fx-background-color: transparent;
+    -fx-background-insets: 0,0,0,0;
+    -fx-background-radius: 0,0,0,0;
+    -fx-border-style: none;
+    -fx-padding: 0 0 0 0;
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    -fx-font-weight: bold;
+    -fx-text-fill: #000000;
+    -fx-font-size: 16px;
+    -fx-translate-x: -4px;
+    -fx-translate-y: 11px;
+}
+
+#lstSpectators .list-cell {
+    -fx-alignment: top-center;
+    -fx-text-fill: #000000;
+    -fx-background-color: transparent;
+}
+
+#lstSpectators .list-view {
+    -fx-background-color: transparent;
+}
+#lstSpectators .list-view .scroll-bar:vertical {
+    -fx-padding: 0px;
+}
+
+/*#lstSpectators .scroll-bar:vertical {
+	-fx-padding: 0px;
+	-fx-opacity: 0;
+}*/
+#lstSpectators .scroll-bar:vertical .increment-arrow,.decrement-arrow, .increment-button, .decrement-button{
+    -fx-padding:0;
+}
+
+
+
+

@@ -1,0 +1,78 @@
+package game.game_configurator;
+
+
+import java.util.ArrayList;
+
+import _main_Application.Main;
+import client.Client;
+import client.ClientType;
+import enumeration.GameState;
+import game.game_Elements.Bag;
+import game.game_Elements.Game;
+import game.game_configurator.GameList_View;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import message.gameMessages.StartGame;
+
+public class GamePane extends HBox{
+
+	
+	public GamePane(Game game) {
+		
+		// Labels for game infos
+		Label gameName = new Label(game.getGameName());
+		Label gameId = new Label(Integer.toString(game.getGameId()));
+		Label playersCount = new Label();
+		playersCount.textProperty().bind(new SimpleIntegerProperty(game.getPlayers().size()).asString());
+
+		// Label's containers
+		HBox topLbls = new HBox(5);
+		topLbls.getChildren().addAll(gameId, gameName);
+	
+		HBox botLbls = new HBox();
+		botLbls.getChildren().add(new Label("Players in game: "));
+		botLbls.getChildren().add(playersCount);
+		botLbls.getChildren().add(new Label("/" + Integer.toString(game.getConfig().getMaxPlayerNumber())));
+				
+		VBox lblContainer = new VBox(5);
+		lblContainer.getChildren().addAll(topLbls, botLbls);
+	
+		// Buttons containers 
+		HBox topBtns = new HBox(5);
+		HBox botBtns = new HBox(5);
+		VBox btnContainer = new VBox(5);
+		
+		// Buttons for game management 
+		Button start = new Button("Start");
+		start.minWidth(75);
+		Button pause = new Button("Pause");
+		pause.minWidth(75);
+		Button resume = new Button("Resume");
+		resume.minWidth(75);
+		Button abort = new Button("Abort");
+		abort.minWidth(75);
+		
+		// Populate btnContainer
+		topBtns.getChildren().addAll(start, abort);
+		botBtns.getChildren().addAll(pause, resume);
+		btnContainer.getChildren().addAll(topBtns, botBtns);
+		
+		// Button functionalities
+		start.setOnAction(e -> {
+			try {
+				game.StartGame(game.getPlayers());
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+		});
+
+		HBox.setHgrow(lblContainer, Priority.ALWAYS);
+		this.getChildren().addAll(lblContainer, btnContainer);
+		this.setPrefWidth(500);
+	}
+}

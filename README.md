@@ -2,8 +2,6 @@
 
 ## An die SWTPRA-ORGA 
 
-### Unsere Website http://agilebearco.ga/index.html
-
 ### Anleitungen für die einzelnen Komponenten:
 
 #### Server

@@ -1,0 +1,12 @@
+.list-view .list-cell:even {
+	-fx-background: transparent;
+}
+.list-view .list-cell:odd {
+	-fx-background-color: transparent;
+}
+.list-view {
+	-fx-effect: innershadow(two-pass-box, black, 10, 0.3, 0, 0)
+}
+#playerHand .scroll-bar:horizontal .increment-arrow,.decrement-arrow, .increment-button, .decrement-button{
+    -fx-padding:0;
+    }

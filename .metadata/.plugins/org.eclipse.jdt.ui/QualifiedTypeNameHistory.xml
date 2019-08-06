@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="qwirkle.Desktop.Controller.GameController"/>
+<fullyQualifiedTypeName name="java.awt.Button"/>
+<fullyQualifiedTypeName name="qwirkle.Desktop.View.InGame.ChatView"/>
+<fullyQualifiedTypeName name="qwirkle.Desktop.Communication.Messages.messages_to_server.MessageSend"/>
+<fullyQualifiedTypeName name="qwirkle.Desktop.View.InGame.GameView"/>
+<fullyQualifiedTypeName name="javafx.scene.control.TextField"/>
+<fullyQualifiedTypeName name="qwirkle.Desktop.Communication.Messages.gameMessages.LeavingRequest"/>
+<fullyQualifiedTypeName name="qwirkle.Desktop.entity.Tile"/>
+<fullyQualifiedTypeName name="javax.swing.text.html.ListView"/>
+<fullyQualifiedTypeName name="java.awt.Image"/>
+<fullyQualifiedTypeName name="qwirkle.Desktop.View.InGame.PlayerHandContainer"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="qwirkle.Desktop.enumeration.ClientType"/>
+<fullyQualifiedTypeName name="qwirkle.Desktop.Resources.Resources"/>
+<fullyQualifiedTypeName name="javafx.geometry.Insets"/>
+<fullyQualifiedTypeName name="qwirkle.Desktop.View.InGame.PlayerHand"/>
+<fullyQualifiedTypeName name="qwirkle.Desktop.Communication.Messages.gameMessages.PlayerHandsRequest"/>
+<fullyQualifiedTypeName name="qwirkle.Desktop.Communication.Messages.gameMessages.TurnTimeLeftRequest"/>
+<fullyQualifiedTypeName name="javafx.application.Platform"/>
+<fullyQualifiedTypeName name="qwirkle.Desktop.entity.Spectator"/>
+<fullyQualifiedTypeName name="qwirkle.Desktop.Communication.Client"/>
+<fullyQualifiedTypeName name="qwirkle.Desktop.Main.Mainstarter"/>
+</qualifiedTypeNameHistroy>

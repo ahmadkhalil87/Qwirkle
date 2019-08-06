@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration xmlns="http://logging.apache.org/log4j/2.0/config" packages = "log4j">
+    <Properties>
+        <Property name="basePath">../Qwirkle-KI/logs</Property>
+    </Properties>
+    
+    <!-- Define custom levels before using them for filtering below. -->
+  <CustomLevels>
+  	<CustomLevel name="HANDVALIDATION" intLevel="6" />
+    <CustomLevel name="CONNECT" intLevel="5" />
+    <CustomLevel name="SCORECALCULATION" intLevel="4" />
+    <CustomLevel name="MESSAGE" intLevel="1" />
+    <CustomLevel name="EMPTYFIELDVALIDATION" intLevel="2" />
+    <CustomLevel name="GAMEJOIN" intLevel="3" />
+    <CustomLevel name="PLAYTILES" intLevel="8" />
+    <CustomLevel name="TILESWAP" intLevel="7" />
+     <CustomLevel name="UPDATE" intLevel="9" />
+     <CustomLevel name="NEIGHBORSHIPVALIDATION" intLevel="10" />
+     <CustomLevel name="ROWCHECK" intLevel="11" />
+ 
+  </CustomLevels>
+    
+    <Appenders>
+        <!-- Console Appenders -->
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{%-8p }| %d{yyyy-MM-dd HH:mm:ss} | [%t] (%F:%L) - %m%n" />
+        </Console>
+    </Appenders>
+   
+	<Loggers>
+      
+      <Root level="trace">
+          <AppenderRef ref="STDOUT" level="debug" />
+      </Root>
+        
+    </Loggers>
+</Configuration>

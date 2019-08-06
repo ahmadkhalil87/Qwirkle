@@ -1,0 +1,88 @@
+@font-face {
+    font-family: Elianto Regular;
+}
+
+#Title{
+	-fx-font-family: Elianto Regular;
+	-fx-font-size: 23px;
+	-fx-fill: white;
+	-fx-font-weight: bold;
+}
+
+.label{
+	-fx-font-family: Elianto Regular;
+	-fx-font-size: 25px;
+	-fx-font-weight: bold;
+	-fx-text-fill: white;
+}
+#Field1 {
+	-fx-font-family: Elianto Regular;
+	-fx-font-size: 20px;
+	-fx-background-color: rgba(0, 0, 0, .5);
+	-fx-text-fill: #e1f5fe;
+}
+#Field2 {
+	-fx-font-family: Elianto Regular;
+	-fx-font-size: 20px;
+	-fx-background-color: rgba(0, 0, 0, .5);
+	-fx-text-fill: #e1f5fe;
+}
+#Field3 {
+	-fx-font-family: Elianto Regular;
+	-fx-font-size: 20px;
+	-fx-background-color: rgba(0, 0, 0, .5);
+	-fx-text-fill: #e1f5fe;
+}
+
+.button{
+	-fx-shape: "M 200 300 L 250 250 L 650 250 L 650 350 L 600 400 L 200 400 L 200 300 ";
+	-fx-pref-width: 200px;
+	-fx-pref-height: 50px;
+	-fx-background-color:  linear-gradient(to bottom, 
+						rgba(33, 33, 33,0.6),
+				 		rgba(255, 255, 255, 0.1),
+						rgba(33, 33, 33,0.6));
+	-fx-border-color: white;
+	-fx-border-radius: 2px;
+	-fx-text-fill: rgb(255, 255, 255, 0.6);
+	-fx-font-family: Elianto Regular;
+   	-fx-font-size: 22px;
+	-fx-padding: 3 3 3 3;
+}
+
+.button:hover {
+	-fx-background-color: transparent;
+	-fx-text-fill: white;
+}
+
+.button:pressed {
+    -fx-background-color: rgba(255, 255, 255, .5);
+}
+
+#btnQuit{
+	-fx-background-color: #212121;
+	-fx-background-repeat: no-repeat;
+	-fx-background-size: contain;
+}
+
+#btnQuit:hover{
+	-fx-background-color: linear-gradient(to bottom,
+											rgba(33, 33, 33, 1),
+											rgba(33, 33, 33, 0.75),
+											rgba(66, 66, 66, 0.5),
+											rgba(33, 33, 33, 0.75),
+											rgba(33, 33, 33, 1));
+}
+
+#btnQuit:pressed{
+    -fx-background-color: rgba(0, 0, 0, .5);
+}
+
+#mainContainer{
+	-fx-shape: "M 165 225 L 165 345 L 180 360 L 480 360 L 495 345 L 495 225 L 480 210 L 420 210 L 405 195 L 255 195 L 240 210 L 180 210 Z";
+	-fx-background-color: rgba(33, 33, 33, 1);
+	-fx-border-color: white;
+	-fx-border-size: 2px;
+	-fx-effect: dropshadow(two-pass-box, rgba(13, 71, 161, 0.6), 80, 0.4, 0, 0);
+	
+}

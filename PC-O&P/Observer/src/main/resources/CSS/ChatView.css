@@ -1,0 +1,84 @@
+@font-face {
+    font-family: Elianto Regular;
+}
+
+#textArea .scroll-pane .viewport {
+   -fx-background-color: transparent;
+}
+
+.scroll-pane {
+   -fx-background-color: transparent;
+}
+
+#chat { 
+    -fx-alignment: bottom-center;       
+    -fx-shape: "M 165 225 L 165 345 L 180 360 L 300 360 L 315 390 L 415 390 L 430 360  L 550 360 L 565 345 L 565 225";
+	-fx-border-color: white;	
+	-fx-border-size: 5px;
+    -fx-background-color: rgba(33, 33, 33, 1);
+
+}
+#chatMessages .list-cell {
+    opacity: 0.5;
+}
+#chatMessages .list-view {
+    opacity: 0.5;
+}
+#textField .text-field{
+	-fx-font-family: Elianto Regular;
+    -fx-alignment: center;
+    -fx-padding: 6 0 5 0;
+    -fx-background-color: rgba(255,255,255, 0.6);
+}
+#textField .text {
+    -fx-font-family: Elianto Regular;
+ 	-fx-text-alignment: center; 
+ }
+
+
+.text-area .content {
+	-fx-font-family: Elianto Regular;
+     -fx-background-color: rgba(255,255,255, 0.6);
+}
+.table-view .column-header {
+    -fx-background-color: transparent;
+}
+.list-cell {
+	-fx-font-family: Elianto Regular;
+    -fx-text-fill: #572b05;
+    -fx-background-color: rgba(255,255,255, 0.6);
+}
+
+.list-view {
+    -fx-background-color: transparent;
+}
+#chatMessages {
+	-fx-alignment: center;
+	-fx-background-color: transparent;
+    -fx-background-insets: 0,0,0,0;
+    -fx-background-radius: 0,0,0,0;
+    -fx-border-style: none;
+    -fx-padding: 0 0 0 0;
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    -fx-font-weight: bold;
+    -fx-text-fill: #572b05;
+    -fx-font-size: 10px;
+    -fx-translate-x: -4px;
+    -fx-translate-y: 11px;
+}
+
+.button{
+     -fx-shape: "M 200 300 L 250 250 L 650 250 L 650 350 L 600 400 L 200 400 L 200 300 ";
+    /*-fx-shape: "M 200 300 L 210 290 L 260 290 L 260 315 L 250 325 L 200 325 L 200 300 ";*/
+	-fx-pref-height: 40px;
+	-fx-background-color:  linear-gradient(to bottom, 
+						rgba(255,255,255,0.2),
+				 		rgba(33,33,33,0.3),
+						rgba(255,255,255,0.2));
+	-fx-border-color: white;
+	-fx-border-radius: 2px;
+	-fx-text-fill: rgb(255, 255, 255, 0.6);
+	-fx-font-family: Elianto Regular;
+    	-fx-font-size: 22px;
+	-fx-padding: 3 3 3 3;
+}

@@ -1,0 +1,49 @@
+@font-face {
+    font-family: Elianto Regular;
+}
+.check-box{
+	-fx-font-size: 20px;
+	-fx-font-family: Elianto Regular;
+	-fx-text-fill: white;
+}
+
+.check-box-text{
+	-fx-font-family: Elianto Regular;
+}
+
+.label{
+	-fx-font-size: 20px;
+	-fx-font-family: Elianto Regular;
+	-fx-text-fill: white;
+
+}
+
+#debugButton{
+	-fx-shape: "M 200 300 L 250 250 L 650 250 L 650 350 L 600 400 L 200 400 L 200 300 ";
+	-fx-pref-width: 200px;
+	-fx-pref-height: 50px;
+	-fx-background-color:  linear-gradient(to bottom, 
+						rgba(255,255,255,0.2),
+				 		rgba(33,33,33,0.3),
+						rgba(255,255,255,0.2));
+	-fx-border-color: white;
+	-fx-border-radius: 2px;
+	-fx-text-fill: rgb(255, 255, 255, 0.6);
+	-fx-font-family: Elianto Regular;
+    	-fx-font-size: 22px;
+	-fx-padding: 3 3 3 3;
+}
+
+#debugButton:hover {
+	-fx-background-color: transparent;
+	-fx-text-fill: white;
+}
+
+
+.button:pressed {
+    -fx-background-color: rgba(255, 255, 255, .5);
+}
+
+#imgButtonSettings:hover, #imgButtonAllPlayerTilesOn:hover, #imgButtonAllPlayerTilesOff:hover, #imgButtonExit:hover{
+	-fx-opacity: 0.5;
+}

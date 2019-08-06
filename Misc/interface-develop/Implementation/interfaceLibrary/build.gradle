@@ -1,0 +1,16 @@
+plugins {
+    id 'java-library'
+}
+
+apply plugin: 'eclipse'
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.8.5'
+}
+
+repositories {
+    jcenter()
+}
+
+version = '1.0.0'
+sourceCompatibility = 1.8

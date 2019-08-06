@@ -1,0 +1,24 @@
+.list-view .list-cell:even {
+	-fx-background-color: transparent;
+}
+.list-view .list-cell:odd {
+	-fx-background-color: transparent;
+}
+.list-view {
+	-fx-background-color: transparent;
+
+}
+
+.label{
+	-fx-font-size: 35px;
+	-fx-font-family: Elianto Regular;
+	-fx-text-fill: white;
+}
+
+
+#BagView{
+	-fx-shape: "M 230 420 L 230 160 L 240 150 L 420 150 L 430 160 L 430 420 L 420 430 L 290 430 L 280 450 L 270 430 L 240 430 Z";	
+	-fx-border-color: white;	
+	-fx-border-size: 2px;
+	-fx-background-color: rgba(33, 33, 33, 1);
+}

@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>340</x>
+      <y>0</y>
+      <w>180</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>ConnectRequest
+--
+
+ - playerName: String</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>540</x>
+      <y>0</y>
+      <w>180</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>ConnectRespond
+--
+
+ - playerID: Int
+ - accepted: Bool
+ - reason: String</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>340</x>
+      <y>130</y>
+      <w>180</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>GamelistRequest
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>540</x>
+      <y>130</y>
+      <w>180</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>GamelistRespond
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>850</x>
+      <y>120</y>
+      <w>170</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>Game
+--
+
+ - gameID: Int
+ - gameName: String
+ - gameState: Int
+ - isTournament: Bool
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1180</x>
+      <y>50</y>
+      <w>170</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>Player
+--
+
+ - playerID: Int
+ - playerName: String
+ - playerState: Int
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1180</x>
+      <y>260</y>
+      <w>170</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>Config
+--
+
+                ...
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1010</x>
+      <y>90</y>
+      <w>190</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=0 ... 8
+m2=0 ... 1
+games</panel_attributes>
+    <additional_attributes>170.0;10.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1010</x>
+      <y>200</y>
+      <w>190</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=0 ... *
+m2=0 ... *
+games</panel_attributes>
+    <additional_attributes>170.0;100.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>710</x>
+      <y>160</y>
+      <w>160</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=0 ... *
+m2=0 ... *
+games</panel_attributes>
+    <additional_attributes>140.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>350</x>
+      <y>360</y>
+      <w>180</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>GamejoinRequest
+--
+
+ - gameID: Int</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>550</x>
+      <y>360</y>
+      <w>180</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>GamejoinRespond
+--
+
+ - gameID: Int
+ - accepted: Bool
+ - reason: String</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>350</x>
+      <y>490</y>
+      <w>180</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>SpectatorjoinRequest
+--
+
+ - gameID: Int</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>550</x>
+      <y>490</y>
+      <w>180</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>SpectatorjoinRespond
+--
+
+ - gameID: Int
+ - accepted: Bool
+ - reason: String</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>350</x>
+      <y>620</y>
+      <w>180</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>MessageSend
+--
+
+ - message: String</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>550</x>
+      <y>620</y>
+      <w>180</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>MessageSignal
+--
+
+ - message: String
+ - playerID: Int
+ - playerName: String
+ - playerState: int</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>550</x>
+      <y>760</y>
+      <w>180</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>LeaveRespond
+--
+
+ - accepted: Bool
+ - reason: String</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>350</x>
+      <y>760</y>
+      <w>180</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>LeaveRequest
+--
+
+ - reason: String</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>750</x>
+      <y>760</y>
+      <w>180</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>LeaveSignal
+--
+
+ - reason: String
+ - playerID: Int
+ - playerName: String
+ - playerState: Int</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

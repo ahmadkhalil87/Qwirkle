@@ -1,0 +1,1 @@
+In diesem Ordner werden Protokolle der Treffen als auch das Logo abgelegt.

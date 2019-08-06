@@ -1,0 +1,47 @@
+@font-face {
+    font-family: Elianto Regular;
+}
+#Title{
+    -fx-font-size: 30px;
+	-fx-font-family: Elianto Regular;
+	-fx-fill: white;
+    -fx-font-weight: bold;
+
+}
+
+.check-box{
+	-fx-font-size: 20px;
+	-fx-font-family: Elianto Regular;
+	-fx-text-fill: white;
+}
+.check-box-text{
+	-fx-font-family: Elianto Regular;
+}
+.label{
+	-fx-font-size: 20px;
+	-fx-font-family: Elianto Regular;
+	-fx-text-fill: white;
+
+}
+.root{
+	-fx-alignment: center-left;
+}
+
+#mainContainer{
+	-fx-shape: "M 100 175 L 125 150 L 500 150 L 525 175 L 525 400 L 500 425 L 325 425 L 300 400 L 125 400 L 100 375 Z";	
+	-fx-background-color:  linear-gradient(to bottom, 
+						rgba(187, 222, 251, 0.4),
+				 		rgba(255,255,255,0.1),
+						rgba(187, 222, 251, 0.4));
+	-fx-border-color: white;
+	-fx-border-radius: 2px; 	
+}
+
+#setsContainer{
+	-fx-shape: "M 160 240 L 320 240 L 360 200 L 520 200 L 560 240 L 720 240 L 760 280 L 760 480 L 720 520 L 160 520 L 120 480 L 120 280 Z";
+	-fx-border-color: white;	
+	-fx-border-size: 2px;
+	-fx-background-color: rgba(33, 33, 33, 1);
+	-fx-effect: dropshadow(two-pass-box, rgba(13, 71, 161, 0.6), 80, 0.4, 0, 0);
+}
+

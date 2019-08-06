@@ -1,0 +1,15 @@
+/ClientTypes/
+/Exceptions/
+/Parser/
+/client/
+/game/
+/gameMessages/
+/gameboard/
+/gameconfig/
+/lobby/
+/message_abstract/
+/messages_from_server/
+/messages_to_server/
+/server/
+/server_JUNIT/
+/server_tests/
